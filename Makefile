@@ -50,3 +50,7 @@ $(CLEAN):
 generator: $(SRCDIR)/generator.c
 	$(ECHO) Compiling $<...
 	$(COMPILER) $(CPPFLAGS) $(INCPATH) -o $(OUTPUTDIR)/$@ $<
+
+# Run
+run: $(EXE) generator
+	./$(OUTPUTDIR)/generator | ./$(OUTPUTDIR)/$(EXE);
