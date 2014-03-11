@@ -1,6 +1,6 @@
-COMPILER=gcc
+COMPILER=@gcc
 CPPFLAGS=-std=c99 -w -Wall
-LINKER=gcc
+LINKER=@gcc
 LINKERFLAGS=
 
 INCPATH=
@@ -8,6 +8,7 @@ LIBPATH=
 LIBS=-lm -lpthread
 
 ECHO=@echo
+TIMER=@time
 CLEAN=clean
 
 SRCDIR=src
@@ -54,3 +55,7 @@ generator: $(SRCDIR)/generator.c
 # Run
 run: $(EXE) generator
 	./$(OUTPUTDIR)/generator | ./$(OUTPUTDIR)/$(EXE);
+
+# Run with timer
+time: $(EXE) generator
+	$(TIMER) ./$(OUTPUTDIR)/generator | ./$(OUTPUTDIR)/$(EXE);
