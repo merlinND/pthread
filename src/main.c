@@ -10,9 +10,25 @@ int isPrime(uint64_t p) {
 	return 1;
 }
 
+void printPrimeFactors(uint64_t n) {
+	printf("%d: ", n);
+	uint64_t i = 2;
+	while (n > 1) {
+		while (!isPrime(i))
+			++i;
+		while (n % i == 0) {
+			printf("%d ", i);
+			n /= i;
+		}
+		if (n % i != 0)
+			i++;
+	}
+	printf("\n");
+}
+
 int main() {
-	printf("Testing for primality:\n");
-	for (uint64_t i = 1; i < 11; ++i) {
-		printf("%d is prime: %d\n", i, isPrime(i));
+	printf("Prime factors:\n");
+	for (uint64_t i = 1; i < 100; i++) {
+		printPrimeFactors(i);
 	}
 }
