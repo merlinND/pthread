@@ -1,11 +1,11 @@
 COMPILER=gcc
-CPPFLAGS=-w -Wall
+CPPFLAGS=-std=c99 -w -Wall
 LINKER=gcc
 LINKERFLAGS=
 
 INCPATH=
 LIBPATH=
-LIBS=
+LIBS=-lm
 
 ECHO=@echo
 CLEAN=clean
