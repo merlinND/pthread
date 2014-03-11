@@ -17,7 +17,7 @@ EXE=PrimeNumbers
 FILES=
 
 HEADERS=$(addprefix $(SRCDIR)/,$(FILES))
-IMPL=$(HEADERS:.h=.cpp)
+IMPL=$(HEADERS:.h=.c)
 
 OBJ=$(addprefix $(OUTPUTDIR)/,$(FILES:.h=.o))
 OBJ+=$(OUTPUTDIR)/main.o
@@ -35,7 +35,7 @@ $(EXE): $(OBJ)
 	$(LINKER) $(LINKERFLAGS) $(INCPATH) $(LIBPATH) -o $(OUTPUTDIR)/$(EXE) $(OBJ) $(LIBS)
 
 # Generic rule
-$(OUTPUTDIR)/%.o: $(SRCDIR)/%.cpp $(SRCDIR)/common.h
+$(OUTPUTDIR)/%.o: $(SRCDIR)/%.c
 	$(ECHO) Compiling $<...
 	$(COMPILER) $(CPPFLAGS) $(INCPATH) -o $@ -c $<
 
