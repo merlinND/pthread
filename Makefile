@@ -5,7 +5,7 @@ LINKERFLAGS=
 
 INCPATH=
 LIBPATH=
-LIBS=-lm
+LIBS=-lm -lpthread
 
 ECHO=@echo
 CLEAN=clean
