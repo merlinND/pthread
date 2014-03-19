@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
         quantity=atoi(argv[1]);
 
     // maximum magnitude of numbers, in bits (0..64)
-    int magnitude= 64;
+    int magnitude= 20;
     if( argc > 2)
         magnitude=atoi(argv[2]);
 
@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     srandom(0);
 
     previous_numbers=malloc(quantity*sizeof(uint64_t));
-    
+
     int i;
     for(i=0; i<quantity; i++)
     {
@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
             // let's generate a new number
             word[0] = random();
             word[1] = random();
-            
+
             // shift right to reduce magnitude
             number >>= 64-magnitude ;
         }
@@ -47,11 +47,10 @@ int main(int argc, char *argv[])
             // let's pick from previously generated numbers
             number = previous_numbers[ random() % i ];
         }
-            
+
         previous_numbers[i] = number;
         printf("%llu\n",(long long)number);
     }
-    
+
     return 0;
 }
-

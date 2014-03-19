@@ -6,6 +6,10 @@ CC = gcc
 CFLAGS = -DDEBUG -g -Wall
 LNFLAGS = $(LIB_SYS)
 
+# Tools
+TIMER = time
+ECHO = @echo
+
 # Exe Name
 EXE = PrimeNumbers
 
@@ -29,7 +33,7 @@ bin/$(EXE): $(OBJECTS)
 
 # Generator
 bin/generator: src/generator.c
-	echo Compiling $<...
+	$(ECHO) Compiling $<...
 	$(CC) $(CFLAGS) $(LIB_SYS) -o $@ $<
 
 # Run
@@ -38,7 +42,12 @@ run: bin/$(EXE) bin/generator
 
 # Run with timer
 time: bin/$(EXE) bin/generator
-	$(TIMER) ./bin/generator | ./bin/$(EXE);
+	mkdir -p tmp
+	./bin/generator > ./tmp/numbers.txt
+	$(ECHO) "------> Sequencial Run"
+	$(TIMER) ./bin/$(EXE) -s < ./tmp/numbers.txt;
+	$(ECHO) "------> Worker Run"
+	$(TIMER) ./bin/$(EXE) -w < ./tmp/numbers.txt;
 
 # Patterns
 bin/%.o: src/%.c
