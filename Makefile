@@ -44,8 +44,13 @@ run: bin/$(EXE) bin/generator
 time: bin/$(EXE) bin/generator
 	mkdir -p tmp
 	./bin/generator > ./tmp/numbers.txt
+	$(ECHO)
 	$(ECHO) "------> Sequencial Run"
 	$(TIMER) ./bin/$(EXE) -s < ./tmp/numbers.txt;
+	$(ECHO)
+	$(ECHO) "------> Lazy Run"
+	$(TIMER) ./bin/$(EXE) -l < ./tmp/numbers.txt;
+	$(ECHO)
 	$(ECHO) "------> Worker Run"
 	$(TIMER) ./bin/$(EXE) -w < ./tmp/numbers.txt;
 

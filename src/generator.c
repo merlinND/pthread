@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
         quantity=atoi(argv[1]);
 
     // maximum magnitude of numbers, in bits (0..64)
-    int magnitude= 20;
+    int magnitude= 25;
     if( argc > 2)
         magnitude=atoi(argv[2]);
 
