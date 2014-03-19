@@ -25,7 +25,7 @@ void initWorkerContext(FILE * file) {
 
 void * startLazyJob(void * arg) {
   uint64_t number =  * (uint64_t *) arg;
-  printPrimeFactors(number, NULL);
+  printPrimeFactors(number, &outputMutex);
   return 0;
 }
 
@@ -49,13 +49,13 @@ void * startJob(void * arg) {
 
 void runTwoLazyJobs() {
   pthread_t thread1, thread2;
-  uint64_t number;
+  uint64_t number1, number2;
   
-  while(fscanf(f, "%llu", &number) != -1) {
-    pthread_create(&thread1, NULL, startLazyJob, (void *) &number);
+  while(fscanf(f, "%llu", &number1) != -1) {
+    pthread_create(&thread1, NULL, startLazyJob, (void *) &number1);
 
-    if (fscanf(f, "%llu", &number) != -1) {
-      pthread_create(&thread2, NULL, startLazyJob, (void *) &number);
+    if (fscanf(f, "%llu", &number2) != -1) {
+      pthread_create(&thread2, NULL, startLazyJob, (void *) &number2);
       pthread_join(thread2, NULL);
     }
 
