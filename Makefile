@@ -10,7 +10,7 @@ LNFLAGS = $(LIB_SYS)
 EXE = PrimeNumbers
 
 # Sources
-SRC = main.c primes.c
+SRC = main.c primes.c worker.c
 
 # Objets
 OBJECTS = $(SRC:%.c=build/%.o)
