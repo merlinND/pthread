@@ -13,6 +13,7 @@ void initMemoizedContext(FILE * file) {
   pthread_mutex_init(&outputMutex, NULL);
 }
 
+// TODO: replace sequential run by concurrent threads (sync access to the cache) 
 void runMemoizedJobs() {
   uint64_t number;
   int status = 0;
