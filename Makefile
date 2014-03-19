@@ -20,7 +20,7 @@ SRC = main.c primes.c worker.c sequential.c
 OBJECTS = $(SRC:%.c=bin/%.o)
 
 # Phony targets
-.PHONY: clean run
+.PHONY: clean run time
 
 # Rules
 all: bin/$(EXE)
