@@ -10,10 +10,10 @@ LNFLAGS = $(LIB_SYS)
 EXE = PrimeNumbers
 
 # Sources
-SRC = main.c primes.c worker.c
+SRC = main.c primes.c worker.c sequential.c
 
 # Objets
-OBJECTS = $(SRC:%.c=build/%.o)
+OBJECTS = $(SRC:%.c=bin/%.o)
 
 # Phony targets
 .PHONY: clean run
@@ -22,7 +22,7 @@ OBJECTS = $(SRC:%.c=build/%.o)
 all: bin/$(EXE)
 
 clean:
-	rm -rf build/
+	rm -rf bin/
 
 bin/$(EXE): $(OBJECTS)
 	$(CC) -o $@ $^ $(LNFLAGS)
@@ -41,6 +41,6 @@ time: bin/$(EXE) bin/generator
 	$(TIMER) ./bin/generator | ./bin/$(EXE);
 
 # Patterns
-build/%.o: src/%.c
+bin/%.o: src/%.c
 	mkdir -p `dirname $@`
 	$(CC) -c $(CFLAGS) -o $@ $<
