@@ -8,7 +8,12 @@
  */
 void initWorkerContext(FILE * file);
 
-void * startJob(void * arg);
+/*
+ * Read two numbers and start a job to factorize each number.
+ * Wait for both jobs to finish.
+ * Repeat until all numbers have been read from the file.
+ */
+void runTwoLazyJobs();
 
 /*
  * Run two concurrent file, factorizing primes read from the file
