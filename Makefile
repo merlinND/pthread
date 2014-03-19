@@ -1,61 +1,45 @@
-COMPILER=@gcc
-CPPFLAGS=-std=c99 -w -Wall
-LINKER=@gcc
-LINKERFLAGS=
+# Libs
+LIB_SYS = -lm -lpthread
 
-INCPATH=
-LIBPATH=
-LIBS=-lm -lpthread
+# Compilation Binaries
+CC = gcc
+CFLAGS = -DDEBUG -g -Wall
+LNFLAGS = $(LIB_SYS)
 
-ECHO=@echo
-TIMER=@time
-CLEAN=clean
+# Exe Name
+EXE = PrimeNumbers
 
-SRCDIR=src
-OUTPUTDIR=bin
-EXE=PrimeNumbers
+# Sources
+SRC = main.c primes.c
 
-FILES=
+# Objets
+OBJECTS = $(SRC:%.c=build/%.o)
 
-HEADERS=$(addprefix $(SRCDIR)/,$(FILES))
-IMPL=$(HEADERS:.h=.c)
+# Phony targets
+.PHONY: clean run
 
-OBJ=$(addprefix $(OUTPUTDIR)/,$(FILES:.h=.o))
-OBJ+=$(OUTPUTDIR)/main.o
+# Rules
+all: bin/$(EXE)
 
-.PHONY: all before $(CLEAN)
-
-all: before $(EXE)
-
-before:
-	mkdir -p bin
-
-# Ouput executable
-$(EXE): $(OBJ)
-	$(ECHO) Linking $(EXE)...
-	$(LINKER) $(LINKERFLAGS) $(INCPATH) $(LIBPATH) -o $(OUTPUTDIR)/$(EXE) $(OBJ) $(LIBS)
-
-# Generic rule
-$(OUTPUTDIR)/%.o: $(SRCDIR)/%.c
-	$(ECHO) Compiling $<...
-	$(COMPILER) $(CPPFLAGS) $(INCPATH) -o $@ -c $<
-
-# Explicit dependancies
-
-
-$(CLEAN):
-	$(ECHO) Cleaning project.
-	rm -f $(OBJ) $(OUTPUTDIR)/$(EXE) core
+clean:
+	rm -rf build/
 
 # Generator
-generator: $(SRCDIR)/generator.c
-	$(ECHO) Compiling $<...
-	$(COMPILER) $(CPPFLAGS) $(INCPATH) -o $(OUTPUTDIR)/$@ $<
+bin/generator: src/generator.c
+	echo Compiling $<...
+	$(CC) $(CFLAGS) $(LIB_SYS) -o $@ $<
 
 # Run
-run: $(EXE) generator
-	./$(OUTPUTDIR)/generator | ./$(OUTPUTDIR)/$(EXE);
+run: bin/$(EXE) bin/generator
+	./bin/generator | ./bin/$(EXE);
 
 # Run with timer
 time: $(EXE) generator
-	$(TIMER) ./$(OUTPUTDIR)/generator | ./$(OUTPUTDIR)/$(EXE);
+	$(TIMER) ./bin/generator | ./bin/$(EXE);
+bin/$(EXE): $(OBJECTS)
+	$(CC) -o $@ $^ $(LNFLAGS)
+
+# Patterns
+build/%.o: src/%.c
+	mkdir -p `dirname $@`
+	$(CC) -c $(CFLAGS) -o $@ $<
