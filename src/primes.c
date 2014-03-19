@@ -3,7 +3,17 @@
 
 #include "primes.h"
 
-#define MAX_FACTORS 64
+/**
+ * Try to find the given number in cache.
+ * @return The index if found, -1 otherwise
+ */
+int findInCache(uint64_t n, cache_t * c) {
+  for (int i = 0; i < c->size; ++i) {
+    if (c->numbers[i] == n)
+      return i;
+  }
+  return -1;
+}
 
 int isPrime(uint64_t p) {
   for (uint64_t i = 2; i <= sqrt(p); ++i) {
@@ -15,7 +25,6 @@ int isPrime(uint64_t p) {
 
 // Compute the prime factorisation of <n> and returns the number of factors
 int getPrimeFactors(uint64_t n, uint64_t * destination) {
-  //printf("Starting to factorize %llu\n", n);
   uint64_t numberOfFactors = 0;
 
   uint64_t i = 2;
@@ -34,18 +43,60 @@ int getPrimeFactors(uint64_t n, uint64_t * destination) {
   return numberOfFactors;
 }
 
-void printPrimeFactors(uint64_t n, pthread_mutex_t * outputMutex) {
+/* Compute the prime factors of <n>, only if the solution is not already present in <cache>.
+ * If the cache is not full, save the factors in the next available spot of the cache.
+ * @return The number of prime factors of <n>, or -1 if the cache is full and thus `n` cannot be memoized
+ */
+int getMemoizedPrimeFactors(uint64_t n, cache_t * c) {
+  // Check if the number is already present in cache
+  int index = findInCache(n, c);
+  if (index >= 0) {
+    return c->numberOfFactors[index];
+  }
+  else if (c->size >= CACHE_SIZE) {
+    return -1;
+  }
+  else {
+    index = c->size;
+    c->numberOfFactors[index] = getPrimeFactors(n, c->factors[index]);
+    c->numbers[index] = n;
+    c->size++;
+    return c->numberOfFactors[index];
+  }
+}
+
+/*
+ * @param outputMutex Pass in NULL to ignore
+ * @param cache Pass in NULL to ignore
+ */
+void printPrimeFactors(uint64_t n, pthread_mutex_t * outputMutex, cache_t * cache) {
+  int numberOfFactors = -1;
+  uint64_t * result;
   uint64_t factors[MAX_FACTORS];
-  int numberOfFactors = getPrimeFactors(n, factors);
+
+  if (cache != NULL) {
+    numberOfFactors = getMemoizedPrimeFactors(n, cache);
+  }
+  // The cache could be full and refuse to compute the factors
+  if (numberOfFactors >= 0) {
+    unsigned int index = findInCache(n, cache);
+    result = cache->factors[index];
+  }
+  else {
+    numberOfFactors = getPrimeFactors(n, &factors);
+    result = factors;
+  }
 
   // We use a mutex to guarantee that output will appear in order
   if(outputMutex != NULL) {
     pthread_mutex_lock(outputMutex);
   }
+
   printf("%llu: ", n);
   for (int i = 0; i < numberOfFactors; ++i) {
-    printf("%llu ", factors[i]);
+    printf("%llu ", result[i]);
   }
+
   printf("\n");
   if(outputMutex != NULL) {
     pthread_mutex_unlock(outputMutex);

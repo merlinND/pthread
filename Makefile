@@ -14,7 +14,7 @@ ECHO = @echo
 EXE = PrimeNumbers
 
 # Sources
-SRC = main.c primes.c worker.c sequential.c
+SRC = main.c primes.c worker.c sequential.c memoized.c
 
 # Objets
 OBJECTS = $(SRC:%.c=bin/%.o)
@@ -53,6 +53,9 @@ time: bin/$(EXE) bin/generator
 	$(ECHO)
 	$(ECHO) "------> Worker Run"
 	$(TIMER) ./bin/$(EXE) -w < ./tmp/numbers.txt;
+	$(ECHO)
+	$(ECHO) "------> Memoized Run"
+	$(TIMER) ./bin/$(EXE) -m < ./tmp/numbers.txt;
 
 # Patterns
 bin/%.o: src/%.c

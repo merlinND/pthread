@@ -3,6 +3,7 @@
 
 #include "sequential.h"
 #include "worker.h"
+#include "memoized.h"
 
 
 void sequencialRun(FILE * f) {
@@ -20,12 +21,17 @@ void workerRun(FILE * f) {
   runTwoJobs();
 }
 
+void memoizedRun(FILE * f) {
+  initMemoizedContext(f);
+  runMemoizedJobs();
+}
+
 
 int main(int argc, char **argv) {
   FILE * f = stdin;
   if(f != NULL) {
     char command;
-    if((command = getopt(argc, argv, "swl")) != -1) {
+    if((command = getopt(argc, argv, "swlm")) != -1) {
       switch(command) {
         case 's':
           sequencialRun(f);
@@ -35,6 +41,9 @@ int main(int argc, char **argv) {
           break;
         case 'w':
           workerRun(f);
+          break;
+        case 'm':
+          memoizedRun(f);
           break;
       }
     } else {

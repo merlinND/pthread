@@ -2,6 +2,7 @@
 
 #include "primes.h"
 
+// ----- Module-wide variables
 static FILE * f;
 
 void initSequentialContext(FILE * file) {
@@ -15,7 +16,7 @@ void runOneJob() {
     status = fscanf(f, "%llu", &number);
 
     if (status != -1) {
-      printPrimeFactors(number, NULL);
+      printPrimeFactors(number, NULL, NULL);
     }
   }
 }

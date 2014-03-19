@@ -5,11 +5,6 @@
 #include "primes.h"
 #include "worker.h"
 
-
-// ----- Structures
-// Memoization
-// TODO: a data structure that could hold the previous factorization results
-
 // ----- Constants
 
 // ----- Module-wide variables
@@ -25,7 +20,7 @@ void initWorkerContext(FILE * file) {
 
 void * startLazyJob(void * arg) {
   uint64_t number =  * (uint64_t *) arg;
-  printPrimeFactors(number, &outputMutex);
+  printPrimeFactors(number, &outputMutex, NULL);
   return 0;
 }
 
@@ -40,7 +35,7 @@ void * startJob(void * arg) {
     pthread_mutex_unlock(&readMutex);
 
     if (status != -1) {
-      printPrimeFactors(number, &outputMutex);
+      printPrimeFactors(number, &outputMutex, NULL);
     }
   }
 
