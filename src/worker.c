@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <pthread.h>
+#include <stdlib.h>
 
 #include "primes.h"
 #include "worker.h"
@@ -45,7 +46,7 @@ void * startJob(void * arg) {
 void runTwoLazyJobs() {
   pthread_t thread1, thread2;
   uint64_t number1, number2;
-  
+
   while(fscanf(f, "%llu", &number1) != -1) {
     pthread_create(&thread1, NULL, startLazyJob, (void *) &number1);
 
@@ -58,10 +59,17 @@ void runTwoLazyJobs() {
   }
 }
 
-void runTwoJobs() {
-  pthread_t thread1, thread2;
-  pthread_create(&thread1, NULL, startJob, NULL);
-  pthread_create(&thread2, NULL, startJob, NULL);
-  pthread_join(thread2, NULL);
-  pthread_join(thread1, NULL);
+void runMultipleJobs(int workers) {
+  pthread_t * threads = malloc(sizeof(pthread_t) * workers);
+  for(int i = 0; i < workers; i ++) {
+    pthread_t thread;
+    pthread_create(&thread, NULL, startJob, NULL);
+    threads[i] = thread;
+  }
+  for(int i = 0; i < workers; i ++) {
+    pthread_t thread;
+    thread = threads[i];
+    pthread_join(thread, NULL);
+  }
+  free(threads);
 }

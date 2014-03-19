@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 #include "sequential.h"
 #include "worker.h"
 #include "memoized.h"
-
 
 void sequencialRun(FILE * f) {
   initSequentialContext(f);
@@ -18,7 +18,7 @@ void lazyRun(FILE * f) {
 
 void workerRun(FILE * f) {
   initWorkerContext(f);
-  runTwoJobs();
+  runMultipleJobs(2);
 }
 
 void memoizedRun(FILE * f) {
@@ -26,28 +26,31 @@ void memoizedRun(FILE * f) {
   runMemoizedJobs();
 }
 
-
 int main(int argc, char **argv) {
   FILE * f = stdin;
   if(f != NULL) {
     char command;
-    if((command = getopt(argc, argv, "swlm")) != -1) {
+    if((command = getopt(argc, argv, "slmw:")) != -1) {
       switch(command) {
         case 's':
-          sequencialRun(f);
+          initSequentialContext(f);
+          runOneJob();
           break;
         case 'l':
-          lazyRun(f);
+          initWorkerContext(f);
+          runTwoLazyJobs();
           break;
         case 'w':
-          workerRun(f);
+          initWorkerContext(f);
+          runMultipleJobs(atoi(optarg));
           break;
         case 'm':
           memoizedRun(f);
           break;
       }
     } else {
-      workerRun(f);
+      initWorkerContext(f);
+      runMultipleJobs(4);
     }
   } else {
     perror("Error opening input file.");

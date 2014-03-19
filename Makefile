@@ -52,7 +52,7 @@ time: bin/$(EXE) bin/generator
 	$(TIMER) ./bin/$(EXE) -l < ./tmp/numbers.txt;
 	$(ECHO)
 	$(ECHO) "------> Worker Run"
-	$(TIMER) ./bin/$(EXE) -w < ./tmp/numbers.txt;
+	$(TIMER) ./bin/$(EXE) -w 4 < ./tmp/numbers.txt;
 	$(ECHO)
 	$(ECHO) "------> Memoized Run"
 	$(TIMER) ./bin/$(EXE) -m < ./tmp/numbers.txt;
