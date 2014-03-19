@@ -3,6 +3,8 @@
 
 #include "primes.h"
 
+#define MAX_UINT32 4294967295
+
 /**
  * Try to find the given number in cache.
  * @return The index if found, -1 otherwise
@@ -15,12 +17,51 @@ int findInCache(uint64_t n, cache_t * c) {
   return -1;
 }
 
-int isPrime(uint64_t p) {
-  for (uint64_t i = 2; i <= sqrt(p); ++i) {
-    if (p % i == 0)
-      return 0;
+int millerRabin(uint64_t n, uint64_t k)
+{
+  if(n == k) return 1;
+    uint64_t s, d, b, e, x;
+
+    // Factor n-1 as d 2^s
+    for(s = 0, d = n - 1; !(d & 1); s++)
+      d >>= 1;
+
+      // x = k^d mod n using exponentiation by squaring
+      // The squaring overflows for n >= 2^32
+      for(x = 1, b = k % n, e = d; e; e >>= 1)
+      {
+        if(e & 1) x = (x * b) % n;
+        b = (b * b) % n;
+      }
+
+      // Verify k^(d 2^[0…s-1]) mod n != 1
+      if(x == 1 || x == n-1) return 1;
+      while(s-- > 1)
+      {
+        x = (x * x) % n;
+        if(x == 1) return 0;
+        if(x == n-1) return 1;
+      }
+      return 1;
+}
+
+int isPrime(uint64_t n)
+{
+  if(n < MAX_UINT32) {
+    return (n>73&&!(n%2&&n%3&&n%5&&n%7&&
+            n%11&&n%13&&n%17&&n%19&&n%23&&n%29&&
+            n%31&&n%37&&n%41&&n%43&&n%47&&n%53&&
+            n%59&&n%61&&n%67&&n%71&&n%73))?0:
+            millerRabin((uint32_t)n, 2)
+         && millerRabin((uint32_t)n, 7)
+         && millerRabin((uint32_t)n, 61);
+  } else {
+    for (uint64_t i = 2; i <= sqrt(n); ++i) {
+      if (n % i == 0)
+        return 0;
+    }
+    return 1;
   }
-  return 1;
 }
 
 // Compute the prime factorisation of <n> and returns the number of factors
