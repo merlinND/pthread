@@ -40,7 +40,7 @@ void printPrimeFactors(uint64_t n, pthread_mutex_t * outputMutex) {
 
   // We use a mutex to guarantee that output will appear in order
   if(outputMutex != NULL) {
-    pthread_mutex_lock(&outputMutex);
+    pthread_mutex_lock(outputMutex);
   }
   printf("%llu: ", n);
   for (int i = 0; i < numberOfFactors; ++i) {
@@ -48,6 +48,6 @@ void printPrimeFactors(uint64_t n, pthread_mutex_t * outputMutex) {
   }
   printf("\n");
   if(outputMutex != NULL) {
-    pthread_mutex_unlock(&outputMutex);
+    pthread_mutex_unlock(outputMutex);
   }
 }
