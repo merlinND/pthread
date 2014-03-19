@@ -24,6 +24,9 @@ all: bin/$(EXE)
 clean:
 	rm -rf bin/
 
+bin/$(EXE): $(OBJECTS)
+	$(CC) -o $@ $^ $(LNFLAGS)
+
 # Generator
 bin/generator: src/generator.c
 	echo Compiling $<...
@@ -34,10 +37,8 @@ run: bin/$(EXE) bin/generator
 	./bin/generator | ./bin/$(EXE);
 
 # Run with timer
-time: $(EXE) generator
+time: bin/$(EXE) bin/generator
 	$(TIMER) ./bin/generator | ./bin/$(EXE);
-bin/$(EXE): $(OBJECTS)
-	$(CC) -o $@ $^ $(LNFLAGS)
 
 # Patterns
 bin/%.o: src/%.c
