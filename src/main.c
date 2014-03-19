@@ -3,6 +3,8 @@
 #include <pthread.h>
 #include <math.h>
 
+#include "primes.h"
+
 #define MAX_FACTORS 64
 
 // ----- Structures
@@ -12,35 +14,6 @@
 // ----- Module-wide variables
 static FILE * f;
 static pthread_mutex_t readMutex, outputMutex;
-
-int isPrime(uint64_t p) {
-  for (uint64_t i = 2; i <= sqrt(p); ++i) {
-    if (p % i == 0)
-      return 0;
-  }
-  return 1;
-}
-
-// Compute the prime factorisation of <n> and returns the number of factors
-int getPrimeFactors(uint64_t n, uint64_t * destination) {
-  //printf("Starting to factorize %llu\n", n);
-  uint64_t numberOfFactors = 0;
-
-  uint64_t i = 2;
-  while (n > 1) {
-    while (!isPrime(i))
-      ++i;
-    while (n % i == 0) {
-      numberOfFactors++;
-      destination[numberOfFactors-1] = i;
-      n /= i;
-    }
-    if (n % i != 0)
-      i++;
-  }
-
-  return numberOfFactors;
-}
 
 void printPrimeFactors(uint64_t n) {
   uint64_t factors[MAX_FACTORS];
@@ -72,18 +45,21 @@ void startJob(void * arg) {
   }
 }
 
+void runTwoJobs() {
+  pthread_mutex_init(&readMutex, NULL);
+  pthread_mutex_init(&outputMutex, NULL);
+
+  pthread_t thread1, thread2;
+  pthread_create(&thread1, NULL, startJob, NULL);
+  pthread_create(&thread2, NULL, startJob, NULL);
+  pthread_join(thread2, NULL);
+  pthread_join(thread1, NULL);
+}
+
 int main() {
   f = stdin;
   if(f != NULL) {
-    pthread_mutex_t mutex;
-    pthread_mutex_init(&readMutex, NULL);
-    pthread_mutex_init(&outputMutex, NULL);
-
-    pthread_t thread1, thread2;
-    pthread_create(&thread1, NULL, startJob, NULL);
-    pthread_create(&thread2, NULL, startJob, NULL);
-    pthread_join(thread2, NULL);
-    pthread_join(thread1, NULL);
+    runTwoJobs();
   } else {
     perror("Error opening input file.");
   }
