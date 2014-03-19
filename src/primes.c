@@ -24,11 +24,13 @@ int isPrime(uint64_t p) {
 }
 
 // Compute the prime factorisation of <n> and returns the number of factors
+// TODO: look for more efficient algorithms?
 int getPrimeFactors(uint64_t n, uint64_t * destination) {
   uint64_t numberOfFactors = 0;
 
   uint64_t i = 2;
   while (n > 1) {
+    // TODO: cache prime numbers (in a thread-local prime-only cache)
     while (!isPrime(i))
       ++i;
     while (n % i == 0) {

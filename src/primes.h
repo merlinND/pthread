@@ -10,6 +10,7 @@
 
 // ----- Structures
 // Memoization
+// TODO: replace by a hash map
 struct cache_t {
   // The current number of numbers saved in the cache
   unsigned int size;
