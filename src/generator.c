@@ -9,18 +9,18 @@ int main(int argc, char *argv[])
     uint64_t *previous_numbers;
 
     // how many numbers to generate
-    int quantity = 10;
+    int quantity = 100;
     if( argc > 1)
         quantity=atoi(argv[1]);
 
     // maximum magnitude of numbers, in bits (0..64)
-    int magnitude= 26;
+    int magnitude= 22;
     if( argc > 2)
         magnitude=atoi(argv[2]);
 
     // percentage of redundancy (0..100)
     // 30% means each number only has 2/3 chance to be a brand new one
-    int redundancy=30;
+    int redundancy=10;
     if( argc > 3)
         redundancy=atoi(argv[3]);
 
