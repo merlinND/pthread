@@ -33,7 +33,6 @@ int getPrimeFactors(uint64_t n, uint64_t * destination) {
   return numberOfFactors;
 }
 
-
 void printPrimeFactors(uint64_t n, pthread_mutex_t * outputMutex) {
   uint64_t factors[MAX_FACTORS];
   int numberOfFactors = getPrimeFactors(n, factors);
