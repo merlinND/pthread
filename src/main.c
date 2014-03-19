@@ -1,44 +1,32 @@
 #include <stdio.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 #include "sequential.h"
 #include "worker.h"
-
-
-void sequencialRun(FILE * f) {
-  initSequentialContext(f);
-  runOneJob();
-}
-
-void lazyRun(FILE * f) {
-  initWorkerContext(f);
-  runTwoLazyJobs();
-}
-
-void workerRun(FILE * f) {
-  initWorkerContext(f);
-  runTwoJobs();
-}
-
 
 int main(int argc, char **argv) {
   FILE * f = stdin;
   if(f != NULL) {
     char command;
-    if((command = getopt(argc, argv, "swl")) != -1) {
+    if((command = getopt(argc, argv, "slw:")) != -1) {
       switch(command) {
         case 's':
-          sequencialRun(f);
+          initSequentialContext(f);
+          runOneJob();
           break;
         case 'l':
-          lazyRun(f);
+          initWorkerContext(f);
+          runTwoLazyJobs();
           break;
         case 'w':
-          workerRun(f);
+          initWorkerContext(f);
+          runMultipleJobs(atoi(optarg));
           break;
       }
     } else {
-      workerRun(f);
+      initWorkerContext(f);
+      runMultipleJobs(4);
     }
   } else {
     perror("Error opening input file.");

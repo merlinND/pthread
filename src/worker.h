@@ -16,9 +16,10 @@ void initWorkerContext(FILE * file);
 void runTwoLazyJobs();
 
 /*
- * Run two concurrent file, factorizing primes read from the file
+ * Run concurrent file readings, factorizing primes read from the file
  * set in `initContext`.
+ * @param workers The amount of parallel workers started
  */
-void runTwoJobs();
+void runMultipleJobs(int workers);
 
 #endif
