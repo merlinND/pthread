@@ -24,13 +24,13 @@ OBJ+=$(OUTPUTDIR)/main.o
 
 .PHONY: all before $(CLEAN)
 
-all: before $(EXE)
+all: before $(OUTPUTDIR)/$(EXE)
 
 before:
 	mkdir -p bin
 
 # Ouput executable
-$(EXE): $(OBJ)
+$(OUTPUTDIR)/$(EXE): $(OBJ)
 	$(ECHO) Linking $(EXE)...
 	$(LINKER) $(LINKERFLAGS) $(INCPATH) $(LIBPATH) -o $(OUTPUTDIR)/$(EXE) $(OBJ) $(LIBS)
 
@@ -47,7 +47,7 @@ $(CLEAN):
 	rm -f $(OBJ) $(OUTPUTDIR)/$(EXE) core
 
 # Generator
-generator: $(SRCDIR)/generator.c
+$(OUTPUTDIR)/generator: $(SRCDIR)/generator.c
 	$(ECHO) Compiling $<...
 	$(COMPILER) $(CPPFLAGS) $(INCPATH) -o $(OUTPUTDIR)/$@ $<
 
