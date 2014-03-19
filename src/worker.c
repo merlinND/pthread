@@ -23,7 +23,7 @@ void initWorkerContext(FILE * file) {
   pthread_mutex_init(&outputMutex, NULL);
 }
 
-void startJob(void * arg) {
+void * startJob(void * arg) {
   uint64_t number;
   int status = 0;
   while(status != -1) {
@@ -37,6 +37,8 @@ void startJob(void * arg) {
       printPrimeFactors(number, &outputMutex);
     }
   }
+
+  return 0;
 }
 
 void runTwoJobs() {

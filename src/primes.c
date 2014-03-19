@@ -1,3 +1,5 @@
+#include <math.h>
+
 #include "primes.h"
 
 #define MAX_FACTORS 64

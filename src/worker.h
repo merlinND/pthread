@@ -8,7 +8,7 @@
  */
 void initWorkerContext(FILE * file);
 
-void startJob(void * arg);
+void * startJob(void * arg);
 
 /*
  * Run two concurrent file, factorizing primes read from the file
