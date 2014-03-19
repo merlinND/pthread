@@ -1,12 +1,12 @@
 #include <stdio.h>
 
-#include "worker.h"
+#include "sequential.h"
 
 int main() {
   FILE * f = stdin;
   if(f != NULL) {
-    initContext(f);
-    runTwoJobs();
+    initSequentialContext(f);
+    runOneJob();
   } else {
     perror("Error opening input file.");
   }

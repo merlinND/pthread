@@ -6,9 +6,7 @@
 /**
  * Initialize the working context, taking as input the given file.
  */
-void initContext(FILE * file);
-
-void printPrimeFactors(uint64_t n);
+void initWorkerContext(FILE * file);
 
 void startJob(void * arg);
 

@@ -11,31 +11,16 @@
 // TODO: a data structure that could hold the previous factorization results
 
 // ----- Constants
-#define MAX_FACTORS 64
 
 // ----- Module-wide variables
 static FILE * f;
 static pthread_mutex_t readMutex, outputMutex;
 
-void initContext(FILE * file) {
+void initWorkerContext(FILE * file) {
   f = file;
 
   pthread_mutex_init(&readMutex, NULL);
   pthread_mutex_init(&outputMutex, NULL);
-}
-
-void printPrimeFactors(uint64_t n) {
-  uint64_t factors[MAX_FACTORS];
-  int numberOfFactors = getPrimeFactors(n, factors);
-
-  // We use a mutex to guarantee that output will appear in order
-  pthread_mutex_lock(&outputMutex);
-  printf("%llu: ", n);
-  for (int i = 0; i < numberOfFactors; ++i) {
-    printf("%llu ", factors[i]);
-  }
-  printf("\n");
-  pthread_mutex_unlock(&outputMutex);
 }
 
 void startJob(void * arg) {
@@ -49,7 +34,7 @@ void startJob(void * arg) {
     pthread_mutex_unlock(&readMutex);
 
     if (status != -1) {
-      printPrimeFactors(number);
+      printPrimeFactors(number, &outputMutex);
     }
   }
 }
