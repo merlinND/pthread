@@ -3,7 +3,7 @@ LIB_SYS = -lm -lpthread
 
 # Compilation Binaries
 CC = gcc
-CFLAGS = -DDEBUG -g -Wall
+CFLAGS = -DDEBUG -g -Wall -O3
 LNFLAGS = $(LIB_SYS)
 
 # Tools
