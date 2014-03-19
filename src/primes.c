@@ -126,7 +126,7 @@ void printPrimeFactors(uint64_t n, pthread_mutex_t * outputMutex, cache_t * cach
     result = cache->factors[index];
   }
   else {
-    numberOfFactors = getPrimeFactors(n, &factors);
+    numberOfFactors = getPrimeFactors(n, factors);
     result = factors;
   }
 
