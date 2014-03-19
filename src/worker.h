@@ -10,7 +10,7 @@ void initContext(FILE * file);
 
 void printPrimeFactors(uint64_t n);
 
-void startJob(void * arg);
+void * startJob(void * arg);
 
 /*
  * Run two concurrent file, factorizing primes read from the file

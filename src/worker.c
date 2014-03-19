@@ -38,7 +38,7 @@ void printPrimeFactors(uint64_t n) {
   pthread_mutex_unlock(&outputMutex);
 }
 
-void startJob(void * arg) {
+void * startJob(void * arg) {
   uint64_t number;
   int status = 0;
   while(status != -1) {
@@ -52,6 +52,8 @@ void startJob(void * arg) {
       printPrimeFactors(number);
     }
   }
+
+  return 0;
 }
 
 void runTwoJobs() {

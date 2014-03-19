@@ -1,3 +1,5 @@
+#include <math.h>
+
 #include "primes.h"
 
 int isPrime(uint64_t p) {
