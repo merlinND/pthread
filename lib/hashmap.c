@@ -6,7 +6,7 @@
  */
 #include <stdlib.h>
 #include <stdio.h>
-#include "synch.h"
+#include <pthread.h>
 #include "hashmap.h"
 
 #define INITIAL_SIZE 1024
@@ -24,7 +24,7 @@ typedef struct _hashmap_map{
   int table_size;
   int size;
   hashmap_element *data;
-  semaphore_t lock;
+  pthread_mutex_t lock;
 } hashmap_map;
 
 /*
@@ -37,9 +37,7 @@ map_t hashmap_new() {
   m->data = (hashmap_element*) calloc(INITIAL_SIZE, sizeof(hashmap_element));
   if(!m->data) goto err;
 
-  m->lock = (semaphore_t) semaphore_create();
-  if(!m->lock) goto err;
-  semaphore_initialize(m->lock, 1);
+  pthread_mutex_init(&m->lock, NULL);
 
   m->table_size = INITIAL_SIZE;
   m->size = 0;
@@ -148,13 +146,13 @@ int hashmap_put(map_t in, int key, any_t value){
   m = (hashmap_map *) in;
 
   /* Lock for concurrency */
-  semaphore_P(m->lock);
+  pthread_mutex_lock(&m->lock);
 
   /* Find a place to put our value */
   index = hashmap_hash(in, key);
   while(index == MAP_FULL){
     if (hashmap_rehash(in) == MAP_OMEM) {
-      semaphore_V(m->lock);
+      pthread_mutex_unlock(&m->lock);
       return MAP_OMEM;
     }
     index = hashmap_hash(in, key);
@@ -167,7 +165,7 @@ int hashmap_put(map_t in, int key, any_t value){
   m->size++; 
 
   /* Unlock */
-  semaphore_V(m->lock);
+  pthread_mutex_unlock(&m->lock);
 
   return MAP_OK;
 }
@@ -184,7 +182,7 @@ int hashmap_get(map_t in, int key, any_t *arg){
   m = (hashmap_map *) in;
 
   /* Lock for concurrency */
-  semaphore_P(m->lock);   
+  pthread_mutex_lock(&m->lock);
 
   /* Find data location */
   curr = hashmap_hash_int(m, key);
@@ -194,7 +192,7 @@ int hashmap_get(map_t in, int key, any_t *arg){
 
     if(m->data[curr].key == key && m->data[curr].in_use == 1){
       *arg = (int *) (m->data[curr].data);
-      semaphore_V(m->lock);
+      pthread_mutex_unlock(&m->lock);
       return MAP_OK;
     }
 
@@ -204,7 +202,7 @@ int hashmap_get(map_t in, int key, any_t *arg){
   *arg = NULL;
 
   /* Unlock */
-  semaphore_V(m->lock);
+  pthread_mutex_unlock(&m->lock);
 
   /* Not found */
   return MAP_MISSING;
@@ -225,7 +223,7 @@ int hashmap_get_one(map_t in, any_t *arg, int remove){
     return MAP_MISSING;
 
   /* Lock for concurrency */
-  semaphore_P(m->lock);
+  pthread_mutex_lock(&m->lock);
 
   /* Linear probing */
   for(i = 0; i< m->table_size; i++)
@@ -235,12 +233,12 @@ int hashmap_get_one(map_t in, any_t *arg, int remove){
         m->data[i].in_use = 0;
         m->size--;
       }
-      semaphore_V(m->lock);
+      pthread_mutex_unlock(&m->lock);
       return MAP_OK;
     }
 
   /* Unlock */
-  semaphore_V(m->lock);
+  pthread_mutex_unlock(&m->lock);
 
   return MAP_OK;
 }
@@ -261,7 +259,7 @@ int hashmap_iterate(map_t in, PFany f, any_t item) {
     return MAP_MISSING; 
 
   /* Lock for concurrency */
-  semaphore_P(m->lock);
+  pthread_mutex_lock(&m->lock);
 
   /* Linear probing */
   for(i = 0; i< m->table_size; i++)
@@ -269,13 +267,13 @@ int hashmap_iterate(map_t in, PFany f, any_t item) {
       any_t data = (any_t) (m->data[i].data);
       int status = f(item, data);
       if (status != MAP_OK) {
-        semaphore_V(m->lock);
+        pthread_mutex_unlock(&m->lock);
         return status;
       }
     }
 
   /* Unlock */
-  semaphore_V(m->lock);
+  pthread_mutex_unlock(&m->lock);
 
         return MAP_OK;
 }
@@ -292,7 +290,7 @@ int hashmap_remove(map_t in, int key){
   m = (hashmap_map *) in;
 
   /* Lock for concurrency */
-  semaphore_P(m->lock);
+  pthread_mutex_lock(&m->lock);
 
   /* Find key */
   curr = hashmap_hash_int(m, key);
@@ -307,14 +305,14 @@ int hashmap_remove(map_t in, int key){
 
       /* Reduce the size */
       m->size--;
-      semaphore_V(m->lock);
+      pthread_mutex_unlock(&m->lock);
       return MAP_OK;
     }
     curr = (curr + 1) % m->table_size;
   }
 
   /* Unlock */
-  semaphore_V(m->lock);
+  pthread_mutex_unlock(&m->lock);
 
   /* Data not found */
   return MAP_MISSING;
@@ -324,7 +322,7 @@ int hashmap_remove(map_t in, int key){
 void hashmap_free(map_t in){
   hashmap_map* m = (hashmap_map*) in;
   free(m->data);
-  semaphore_destroy(m->lock);
+  pthread_mutex_destroy(&m->lock);
   free(m);
 }
 
