@@ -3,7 +3,14 @@
 
 #include "primes.h"
 
+// ----- Constants
 #define MAX_UINT32 4294967295
+#define MAX_PRIMES 10000
+// TODO: tweak cache size
+
+// ----- Thread-local variables
+static __thread uint64_t primes[MAX_PRIMES];
+static __thread uint64_t numberOfPrimes = 0;
 
 int millerRabin(uint64_t n, uint64_t k)
 {
@@ -57,11 +64,28 @@ int isPrime(uint64_t n)
 int getPrimeFactors(uint64_t n, uint64_t * destination) {
   uint64_t numberOfFactors = 0;
 
+  uint64_t primeIndex = 0;
   uint64_t i = 2;
   while (n > 1) {
-    // TODO: cache prime numbers (in a thread-local prime-only cache)
-    while (!isPrime(i))
-      ++i;
+
+    // First, read all available primes in cache
+    if (primeIndex < numberOfPrimes) {
+      i = primes[primeIndex];
+    }
+    // When the end of the cache has been reached,
+    // start filling it with the next primes
+    else {
+      while (!isPrime(i)) {
+        ++i;
+      }
+      // Write in cache if there's available space
+      if (numberOfPrimes < MAX_PRIMES) {
+        primes[numberOfPrimes] = i;
+        numberOfPrimes++;
+      }
+    }
+    primeIndex++;
+
     while (n % i == 0) {
       numberOfFactors++;
       destination[numberOfFactors-1] = i;

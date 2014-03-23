@@ -60,7 +60,7 @@ time: bin/$(EXE) bin/generator
 	$(TIMER) ./bin/$(EXE) -w 4 < ./tmp/numbers.txt;
 	$(ECHO)
 	$(ECHO) "------> Memoized Run"
-	$(TIMER) ./bin/$(EXE) -m < ./tmp/numbers.txt;
+	$(TIMER) ./bin/$(EXE) -m 4 < ./tmp/numbers.txt;
 
 # Patterns
 bin/%.o: src/%.c
