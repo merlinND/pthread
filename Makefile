@@ -1,10 +1,11 @@
 # Libs
 LIB_SYS = -lm -lpthread
+LIB_USR = -Ilib
 
 # Compilation Binaries
 CC = gcc
 CFLAGS = -DDEBUG -g -Wall -O3
-LNFLAGS = $(LIB_SYS)
+LNFLAGS = $(LIB_SYS) $(LIB_USR)
 
 # Tools
 TIMER = time
@@ -14,22 +15,26 @@ ECHO = @echo
 EXE = PrimeNumbers
 
 # Sources
-SRC = main.c primes.c worker.c sequential.c memoized.c
+SRC = main.c primes.c worker.c sequential.c memoized.c cache.c
 
 # Objets
-OBJECTS = $(SRC:%.c=bin/%.o)
+OBJECTS = $(SRC:%.c=bin/%.o) bin/hashmap.o
 
 # Phony targets
 .PHONY: clean run time
 
 # Rules
-all: bin/$(EXE)
+all: bin/$(EXE) bin/hashmap.o
 
 clean:
 	rm -rf bin/
 
 bin/$(EXE): $(OBJECTS)
 	$(CC) -o $@ $^ $(LNFLAGS)
+
+# Libraries to compile
+bin/hashmap.o: lib/hashmap.c
+	$(CC) -c $(CFLAGS) -o $@ $<
 
 # Generator
 bin/generator: src/generator.c
@@ -60,4 +65,4 @@ time: bin/$(EXE) bin/generator
 # Patterns
 bin/%.o: src/%.c
 	mkdir -p `dirname $@`
-	$(CC) -c $(CFLAGS) -o $@ $<
+	$(CC) -c $(CFLAGS) $(LIB_USR) -o $@ $<

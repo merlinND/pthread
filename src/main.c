@@ -6,7 +6,7 @@
 #include "worker.h"
 #include "memoized.h"
 
-void sequencialRun(FILE * f) {
+void sequentialRun(FILE * f) {
   initSequentialContext(f);
   runOneJob();
   freeSequentialContext(f);
@@ -37,12 +37,10 @@ int main(int argc, char **argv) {
     if((command = getopt(argc, argv, "slmw:")) != -1) {
       switch(command) {
         case 's':
-          initSequentialContext(f);
-          runOneJob();
+          sequentialRun(f);
           break;
         case 'l':
-          initWorkerContext(f);
-          runTwoLazyJobs();
+          lazyRun(f);
           break;
         case 'w':
           initWorkerContext(f);
@@ -53,8 +51,7 @@ int main(int argc, char **argv) {
           break;
       }
     } else {
-      initWorkerContext(f);
-      runMultipleJobs(4);
+      memoizedRun(f);
     }
   } else {
     perror("Error opening input file.");
