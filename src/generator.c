@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <time.h>
 
 int main(int argc, char *argv[])
 {
@@ -24,9 +25,9 @@ int main(int argc, char *argv[])
     if( argc > 3)
         redundancy=atoi(argv[3]);
 
-    // we seed the the generator with a constant value so as to get
-    // reproducible results.
-    srandom(0);
+    // we could as well seed the the generator with a constant
+    // value so as to get reproducible results.
+    srandom(time(NULL));
 
     previous_numbers=malloc(quantity*sizeof(uint64_t));
 

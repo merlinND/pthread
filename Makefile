@@ -24,7 +24,7 @@ OBJECTS = $(SRC:%.c=bin/%.o) bin/hashmap.o
 .PHONY: clean run time
 
 # Rules
-all: bin/$(EXE) bin/hashmap.o
+all: bin/generator bin/$(EXE) bin/hashmap.o
 
 clean:
 	rm -rf bin/
