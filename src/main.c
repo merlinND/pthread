@@ -24,9 +24,9 @@ void workerRun(FILE * f, int numberOfThreads) {
   freeWorkerContext(f);
 }
 
-void memoizedRun(FILE * f) {
+void memoizedRun(FILE * f, int numberOfThreads) {
   initMemoizedContext(f);
-  runMemoizedJobs();
+  runMemoizedJobs(numberOfThreads);
   freeMemoizedContext(f);
 }
 
@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
   FILE * f = stdin;
   if(f != NULL) {
     char command;
-    if((command = getopt(argc, argv, "slmw:")) != -1) {
+    if((command = getopt(argc, argv, "slm:w:")) != -1) {
       switch(command) {
         case 's':
           sequentialRun(f);
@@ -46,11 +46,11 @@ int main(int argc, char **argv) {
           workerRun(f, atoi(optarg));
           break;
         case 'm':
-          memoizedRun(f);
+          memoizedRun(f, atoi(optarg));
           break;
       }
     } else {
-      memoizedRun(f);
+      memoizedRun(f, 4);
     }
   } else {
     perror("Error opening input file.");
