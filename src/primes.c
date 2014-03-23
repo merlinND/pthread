@@ -12,32 +12,38 @@
 static __thread uint64_t primes[MAX_PRIMES];
 static __thread uint64_t numberOfPrimes = 0;
 
+/*
+ * Test n for primality using the Miller Rabin probabilistic method.
+ * DO NOT use for n > MAX_UINT32
+ * @param n The number to test for primality
+ * @return 1 if n is probably prime, 0 otherwise
+ */
 int millerRabin(uint64_t n, uint64_t k)
 {
   if(n == k) return 1;
-    uint64_t s, d, b, e, x;
 
-    // Factor n-1 as d 2^s
-    for(s = 0, d = n - 1; !(d & 1); s++)
-      d >>= 1;
+  uint64_t s, d, b, e, x;
+  // Factor n-1 as d 2^s
+  for(s = 0, d = n - 1; !(d & 1); s++)
+    d >>= 1;
 
-      // x = k^d mod n using exponentiation by squaring
-      // The squaring overflows for n >= 2^32
-      for(x = 1, b = k % n, e = d; e; e >>= 1)
-      {
-        if(e & 1) x = (x * b) % n;
-        b = (b * b) % n;
-      }
+  // x = k^d mod n using exponentiation by squaring
+  // The squaring overflows for n >= 2^32
+  for(x = 1, b = k % n, e = d; e; e >>= 1)
+  {
+    if(e & 1) x = (x * b) % n;
+    b = (b * b) % n;
+  }
 
-      // Verify k^(d 2^[0…s-1]) mod n != 1
-      if(x == 1 || x == n-1) return 1;
-      while(s-- > 1)
-      {
-        x = (x * x) % n;
-        if(x == 1) return 0;
-        if(x == n-1) return 1;
-      }
-      return 1;
+  // Verify k^(d 2^[0…s-1]) mod n != 1
+  if(x == 1 || x == n-1) return 1;
+  while(s-- > 1)
+  {
+    x = (x * x) % n;
+    if(x == 1) return 0;
+    if(x == n-1) return 1;
+  }
+  return 1;
 }
 
 int isPrime(uint64_t n)
