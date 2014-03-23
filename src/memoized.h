@@ -4,6 +4,8 @@
 #include <stdio.h>
 
 void initMemoizedContext(FILE * file);
-void runMemoizedJobs();
+void freeMemoizedContext(FILE * file);
+
+void runMemoizedJobs(int workers);
 
 #endif

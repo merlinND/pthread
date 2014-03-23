@@ -6,51 +6,51 @@
 #include "worker.h"
 #include "memoized.h"
 
-void sequencialRun(FILE * f) {
+void sequentialRun(FILE * f) {
   initSequentialContext(f);
   runOneJob();
+  freeSequentialContext(f);
 }
 
 void lazyRun(FILE * f) {
   initWorkerContext(f);
   runTwoLazyJobs();
+  freeWorkerContext(f);
 }
 
-void workerRun(FILE * f) {
+void workerRun(FILE * f, int numberOfThreads) {
   initWorkerContext(f);
-  runMultipleJobs(2);
+  runMultipleJobs(numberOfThreads);
+  freeWorkerContext(f);
 }
 
-void memoizedRun(FILE * f) {
+void memoizedRun(FILE * f, int numberOfThreads) {
   initMemoizedContext(f);
-  runMemoizedJobs();
+  runMemoizedJobs(numberOfThreads);
+  freeMemoizedContext(f);
 }
 
 int main(int argc, char **argv) {
   FILE * f = stdin;
   if(f != NULL) {
     char command;
-    if((command = getopt(argc, argv, "slmw:")) != -1) {
+    if((command = getopt(argc, argv, "slm:w:")) != -1) {
       switch(command) {
         case 's':
-          initSequentialContext(f);
-          runOneJob();
+          sequentialRun(f);
           break;
         case 'l':
-          initWorkerContext(f);
-          runTwoLazyJobs();
+          lazyRun(f);
           break;
         case 'w':
-          initWorkerContext(f);
-          runMultipleJobs(atoi(optarg));
+          workerRun(f, atoi(optarg));
           break;
         case 'm':
-          memoizedRun(f);
+          memoizedRun(f, atoi(optarg));
           break;
       }
     } else {
-      initWorkerContext(f);
-      runMultipleJobs(4);
+      memoizedRun(f, 4);
     }
   } else {
     perror("Error opening input file.");

@@ -7,6 +7,7 @@
  * Initialize the working context, taking as input the given file.
  */
 void initWorkerContext(FILE * file);
+void freeWorkerContext();
 
 /*
  * Read two numbers and start a job to factorize each number.

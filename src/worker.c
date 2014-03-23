@@ -19,6 +19,14 @@ void initWorkerContext(FILE * file) {
   pthread_mutex_init(&outputMutex, NULL);
 }
 
+void freeWorkerContext() {
+  if (f != NULL)
+    fclose(f);
+
+  pthread_mutex_destroy(&readMutex);
+  pthread_mutex_destroy(&outputMutex);
+}
+
 void * startLazyJob(void * arg) {
   uint64_t number =  * (uint64_t *) arg;
   printPrimeFactors(number, &outputMutex, NULL);
