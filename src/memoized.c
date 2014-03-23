@@ -12,6 +12,11 @@ void initMemoizedContext(FILE * file) {
   cache.size = 0;
   pthread_mutex_init(&outputMutex, NULL);
 }
+void freeMemoizedContext(FILE * file) {
+  if (f!= NULL)
+    fclose(f);
+  pthread_mutex_destroy(&outputMutex);
+}
 
 // TODO: replace sequential run by concurrent threads (sync access to the cache) 
 void runMemoizedJobs() {

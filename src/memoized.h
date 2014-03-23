@@ -5,5 +5,6 @@
 
 void initMemoizedContext(FILE * file);
 void runMemoizedJobs();
+void freeMemoizedContext(FILE * file);
 
 #endif

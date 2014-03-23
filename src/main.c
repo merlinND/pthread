@@ -9,21 +9,25 @@
 void sequencialRun(FILE * f) {
   initSequentialContext(f);
   runOneJob();
+  freeSequentialContext(f);
 }
 
 void lazyRun(FILE * f) {
   initWorkerContext(f);
   runTwoLazyJobs();
+  freeWorkerContext(f);
 }
 
 void workerRun(FILE * f) {
   initWorkerContext(f);
   runMultipleJobs(2);
+  freeWorkerContext(f);
 }
 
 void memoizedRun(FILE * f) {
   initMemoizedContext(f);
   runMemoizedJobs();
+  freeMemoizedContext(f);
 }
 
 int main(int argc, char **argv) {

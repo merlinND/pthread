@@ -8,6 +8,10 @@ static FILE * f;
 void initSequentialContext(FILE * file) {
   f = file;
 }
+void freeSequentialContext(FILE * file) {
+  if (f != NULL)
+  	fclose(f);
+}
 
 void runOneJob() {
   uint64_t number;
