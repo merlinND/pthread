@@ -5,18 +5,6 @@
 
 #define MAX_UINT32 4294967295
 
-/**
- * Try to find the given number in cache.
- * @return The index if found, -1 otherwise
- */
-int findInCache(uint64_t n, cache_t * c) {
-  for (int i = 0; i < c->size; ++i) {
-    if (c->numbers[i] == n)
-      return i;
-  }
-  return -1;
-}
-
 int millerRabin(uint64_t n, uint64_t k)
 {
   if(n == k) return 1;
@@ -90,21 +78,25 @@ int getPrimeFactors(uint64_t n, uint64_t * destination) {
  * If the cache is not full, save the factors in the next available spot of the cache.
  * @return The number of prime factors of <n>, or -1 if the cache is full and thus `n` cannot be memoized
  */
-int getMemoizedPrimeFactors(uint64_t n, cache_t * c) {
+int getMemoizedPrimeFactors(uint64_t n, map_t * c) {
   // Check if the number is already present in cache
-  int index = findInCache(n, c);
-  if (index >= 0) {
-    return c->numberOfFactors[index];
-  }
-  else if (c->size >= CACHE_SIZE) {
-    return -1;
+  cache_entry_t * entry = NULL;
+  int status = hashmap_get(c, n, (any_t) &entry);
+
+  if (status == MAP_OK) {
+    return entry->numberOfFactors;
   }
   else {
-    index = c->size;
-    c->numberOfFactors[index] = getPrimeFactors(n, c->factors[index]);
-    c->numbers[index] = n;
-    c->size++;
-    return c->numberOfFactors[index];
+    // Compute the prime factors
+    entry = newCacheEntry();
+    entry->numberOfFactors = getPrimeFactors(n, entry->factors);
+
+    // Put in cache
+    int status = hashmap_put(c, n, (any_t)entry);
+    if (status == MAP_OK)
+      return entry->numberOfFactors;
+    else
+      return -1;
   }
 }
 
@@ -112,7 +104,7 @@ int getMemoizedPrimeFactors(uint64_t n, cache_t * c) {
  * @param outputMutex Pass in NULL to ignore
  * @param cache Pass in NULL to ignore
  */
-void printPrimeFactors(uint64_t n, pthread_mutex_t * outputMutex, cache_t * cache) {
+void printPrimeFactors(uint64_t n, pthread_mutex_t * outputMutex, map_t * cache) {
   int numberOfFactors = -1;
   uint64_t * result;
   uint64_t factors[MAX_FACTORS];
@@ -120,11 +112,12 @@ void printPrimeFactors(uint64_t n, pthread_mutex_t * outputMutex, cache_t * cach
   if (cache != NULL) {
     numberOfFactors = getMemoizedPrimeFactors(n, cache);
   }
-  // The cache could be full and refuse to compute the factors
   if (numberOfFactors >= 0) {
-    unsigned int index = findInCache(n, cache);
-    result = cache->factors[index];
+    cache_entry_t * entry = NULL;
+    hashmap_get(cache, n, (any_t) &entry);
+    result = entry->factors;
   }
+  // The cache could be full and refuse to compute the factors
   else {
     numberOfFactors = getPrimeFactors(n, factors);
     result = factors;
@@ -139,8 +132,8 @@ void printPrimeFactors(uint64_t n, pthread_mutex_t * outputMutex, cache_t * cach
   for (int i = 0; i < numberOfFactors; ++i) {
     printf("%llu ", result[i]);
   }
-
   printf("\n");
+  
   if(outputMutex != NULL) {
     pthread_mutex_unlock(outputMutex);
   }
