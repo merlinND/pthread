@@ -18,6 +18,6 @@ typedef struct cache_entry_t cache_entry_t;
 
 // ----- Supporting functions
 cache_entry_t * newCacheEntry();
-void freeCacheEntry(cache_entry_t * entry);
+void freeCache(map_t cache);
 
 #endif

@@ -226,7 +226,7 @@ int hashmap_get_one(map_t in, any_t *arg, int remove){
   pthread_mutex_lock(&m->lock);
 
   /* Linear probing */
-  for(i = 0; i< m->table_size; i++)
+  for(i = 0; i< m->table_size; i++) {
     if(m->data[i].in_use != 0){
       *arg = (any_t) (m->data[i].data);
       if (remove) {
@@ -236,11 +236,12 @@ int hashmap_get_one(map_t in, any_t *arg, int remove){
       pthread_mutex_unlock(&m->lock);
       return MAP_OK;
     }
+  }
 
   /* Unlock */
   pthread_mutex_unlock(&m->lock);
 
-  return MAP_OK;
+  return MAP_MISSING;
 }
 
 /*

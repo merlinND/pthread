@@ -17,9 +17,8 @@ void freeMemoizedContext(FILE * file) {
   if (f!= NULL)
     fclose(f);
 
-  // TODO: free each entry of the cache
-
-  hashmap_free(cache);
+  freeCache(cache);
+  pthread_mutex_destroy(&readMutex);
   pthread_mutex_destroy(&outputMutex);
 }
 
