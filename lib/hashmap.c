@@ -13,7 +13,7 @@
 
 // We need to keep keys and values
 typedef struct _hashmap_element{
-  int key;
+  uint64_t key;
   int in_use;
   any_t data;
 } hashmap_element;
@@ -52,7 +52,7 @@ map_t hashmap_new() {
 /*
  * Hashing function for an integer
  */
-unsigned int hashmap_hash_int(hashmap_map * m, unsigned int key){
+unsigned int hashmap_hash_int(hashmap_map * m, uint64_t key){
   /* Robert Jenkins' 32 bit Mix Function */
   key += (key << 12);
   key ^= (key >> 22);
@@ -73,7 +73,7 @@ unsigned int hashmap_hash_int(hashmap_map * m, unsigned int key){
  * Return the integer of the location in data
  * to store the point to the item, or MAP_FULL.
  */
-int hashmap_hash(map_t in, int key){
+int hashmap_hash(map_t in, uint64_t key){
   int curr;
   int i;
 
@@ -138,7 +138,7 @@ int hashmap_rehash(map_t in){
 /*
  * Add a pointer to the hashmap with some key
  */
-int hashmap_put(map_t in, int key, any_t value){
+int hashmap_put(map_t in, uint64_t key, any_t value){
   int index;
   hashmap_map* m;
 
@@ -173,7 +173,7 @@ int hashmap_put(map_t in, int key, any_t value){
 /*
  * Get your pointer out of the hashmap with a key
  */
-int hashmap_get(map_t in, int key, any_t *arg){
+int hashmap_get(map_t in, uint64_t key, any_t *arg){
   int curr;
   int i;
   hashmap_map* m;
@@ -281,7 +281,7 @@ int hashmap_iterate(map_t in, PFany f, any_t item) {
 /*
  * Remove an element with that key from the map
  */
-int hashmap_remove(map_t in, int key){
+int hashmap_remove(map_t in, uint64_t key){
   int i;
   int curr;
   hashmap_map* m;
