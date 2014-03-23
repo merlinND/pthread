@@ -18,9 +18,9 @@ void lazyRun(FILE * f) {
   freeWorkerContext(f);
 }
 
-void workerRun(FILE * f) {
+void workerRun(FILE * f, int numberOfThreads) {
   initWorkerContext(f);
-  runMultipleJobs(2);
+  runMultipleJobs(numberOfThreads);
   freeWorkerContext(f);
 }
 
@@ -43,8 +43,7 @@ int main(int argc, char **argv) {
           lazyRun(f);
           break;
         case 'w':
-          initWorkerContext(f);
-          runMultipleJobs(atoi(optarg));
+          workerRun(f, atoi(optarg));
           break;
         case 'm':
           memoizedRun(f);
