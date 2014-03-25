@@ -10,12 +10,12 @@ int main(int argc, char *argv[])
     uint64_t *previous_numbers;
 
     // how many numbers to generate
-    int quantity = 20;
+    int quantity = 1000;
     if( argc > 1)
         quantity=atoi(argv[1]);
 
     // maximum magnitude of numbers, in bits (0..64)
-    int magnitude = 24;
+    int magnitude = 32;
     if( argc > 2)
         magnitude=atoi(argv[2]);
 
@@ -25,8 +25,9 @@ int main(int argc, char *argv[])
     if( argc > 3)
         redundancy=atoi(argv[3]);
 
-    // we could as well seed the the generator with a constant
+    // we can seed the the generator with a constant
     // value so as to get reproducible results.
+    //srandom(0);
     srandom(time(NULL));
 
     previous_numbers=malloc(quantity*sizeof(uint64_t));

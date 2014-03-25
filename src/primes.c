@@ -73,6 +73,11 @@ int getPrimeFactors(uint64_t n, uint64_t * destination) {
   uint64_t primeIndex = 0;
   uint64_t i = 2;
   while (n > 1) {
+    // If n is prime, no need to go any further
+    if (isPrime(n)) {
+      destination[numberOfFactors] = n;
+      return ++numberOfFactors;
+    }
 
     // First, read all available primes in cache
     if (primeIndex < numberOfPrimes) {
