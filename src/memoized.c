@@ -1,5 +1,6 @@
 #include "memoized.h"
 
+#include <stdint.h>
 #include "cache.h"
 #include "primes.h"
 

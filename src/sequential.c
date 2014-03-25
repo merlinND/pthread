@@ -1,5 +1,6 @@
 #include "sequential.h"
 
+#include <stdint.h>
 #include "primes.h"
 
 // ----- Module-wide variables

@@ -4,7 +4,7 @@ LIB_USR = -Ilib
 
 # Compilation Binaries
 CC = gcc
-CFLAGS = -DDEBUG -g -Wall -O3
+CFLAGS = -DDEBUG -g -Wall -O3 -std=c99
 LNFLAGS = $(LIB_SYS) $(LIB_USR)
 
 # Tools
