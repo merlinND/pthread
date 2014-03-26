@@ -2,11 +2,16 @@
 #include <stdio.h>
 
 #include "primes.h"
+#include "sprp64.h"
 
 // ----- Constants
 #define MAX_UINT32 4294967295
 #define MAX_PRIMES 10000
 // TODO: tweak cache size
+
+// Miller-Rabin bases (found by Jim Sinclair)
+const uint64_t bases64[] = {2, 325, 9375, 28178, 450775, 9780504, 1795265022};
+#define BASES_CNT64 7
 
 // ----- Thread-local variables
 static __thread uint64_t primes[MAX_PRIMES];
@@ -18,8 +23,7 @@ static __thread uint64_t numberOfPrimes = 0;
  * @param n The number to test for primality
  * @return 1 if n is probably prime, 0 otherwise
  */
-int millerRabin(uint64_t n, uint64_t k)
-{
+int millerRabin32(uint64_t n, uint64_t k) {
   if(n == k) return 1;
 
   uint64_t s, d, b, e, x;
@@ -46,22 +50,27 @@ int millerRabin(uint64_t n, uint64_t k)
   return 1;
 }
 
-int isPrime(uint64_t n)
-{
+int millerRabin64(uint64_t n, uint64_t k) {
+  return efficient_mr64(bases64, k, n);
+}
+
+int isPrime(uint64_t n) {
   if(n < MAX_UINT32) {
     return (n>73&&!(n%2&&n%3&&n%5&&n%7&&
             n%11&&n%13&&n%17&&n%19&&n%23&&n%29&&
             n%31&&n%37&&n%41&&n%43&&n%47&&n%53&&
             n%59&&n%61&&n%67&&n%71&&n%73))?0:
-            millerRabin((uint32_t)n, 2)
-         && millerRabin((uint32_t)n, 7)
-         && millerRabin((uint32_t)n, 61);
+            millerRabin32((uint32_t)n, 2)
+         && millerRabin32((uint32_t)n, 7)
+         && millerRabin32((uint32_t)n, 61);
   } else {
-    for (uint64_t i = 2; i <= sqrt(n); ++i) {
-      if (n % i == 0)
-        return 0;
-    }
-    return 1;
+    return (n>73&&!(n%2&&n%3&&n%5&&n%7&&
+            n%11&&n%13&&n%17&&n%19&&n%23&&n%29&&
+            n%31&&n%37&&n%41&&n%43&&n%47&&n%53&&
+            n%59&&n%61&&n%67&&n%71&&n%73))?0:
+            millerRabin64(n, 2)
+         && millerRabin64(n, 7)
+         && millerRabin64(n, 61);
   }
 }
 
