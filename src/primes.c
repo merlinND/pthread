@@ -6,8 +6,6 @@
 
 // ----- Constants
 #define MAX_UINT32 4294967295
-#define MAX_PRIMES 10000
-// TODO: tweak cache size
 
 // Miller-Rabin bases (found by Jim Sinclair)
 const uint64_t bases64[] = {2, 325, 9375, 28178, 450775, 9780504, 1795265022};
@@ -117,12 +115,13 @@ int getPrimeFactors(uint64_t n, uint64_t * destination) {
  * If the cache is not full, save the factors in the next available spot of the cache.
  * @return The number of prime factors of <n>, or -1 if the cache is full and thus `n` cannot be memoized
  */
-int getMemoizedPrimeFactors(uint64_t n, map_t * c) {
+int getMemoizedPrimeFactors(uint64_t n, map_t * c, uint64_t ** result) {
   // Check if the number is already present in cache
   cache_entry_t * entry = NULL;
   int status = hashmap_get(c, n, (any_t) &entry);
 
   if (status == MAP_OK) {
+    *result = entry->factors;
     return entry->numberOfFactors;
   }
   else {
@@ -132,10 +131,14 @@ int getMemoizedPrimeFactors(uint64_t n, map_t * c) {
 
     // Put in cache
     int status = hashmap_put(c, n, (any_t)entry);
-    if (status == MAP_OK)
+    if (status == MAP_OK) {
+      *result = entry->factors;
       return entry->numberOfFactors;
-    else
+    }
+    else {
+      result = NULL;
       return -1;
+    }
   }
 }
 
@@ -149,15 +152,10 @@ void printPrimeFactors(uint64_t n, pthread_mutex_t * outputMutex, map_t * cache)
   uint64_t factors[MAX_FACTORS];
 
   if (cache != NULL) {
-    numberOfFactors = getMemoizedPrimeFactors(n, cache);
+    numberOfFactors = getMemoizedPrimeFactors(n, cache, &result);
   }
-  if (numberOfFactors >= 0) {
-    cache_entry_t * entry = NULL;
-    hashmap_get(cache, n, (any_t) &entry);
-    result = entry->factors;
-  }
-  // The cache could be full and refuse to compute the factors
-  else {
+  // No cache or cache is full
+  if (numberOfFactors < 0) {
     numberOfFactors = getPrimeFactors(n, factors);
     result = factors;
   }
