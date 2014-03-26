@@ -84,31 +84,29 @@ int isPrime(uint64_t n) {
 int getPrimeFactors(uint64_t n, uint64_t * destination) {
   uint64_t numberOfFactors = 0;
 
-  uint64_t i = 1;
+  uint64_t i = 2;
   char step = 2;
-  while (n > 1) {
+  while (i < n) {
     // If n is prime, no need to go any further
     if (isPrime(n)) {
       destination[numberOfFactors] = n;
       return ++numberOfFactors;
     }
 
-    // 2, 3, 5, 7, (+4), (+2), (+4), (+2), ...
-    if (i >= 5) {
-      do {
-        i += step;
-        step = (step == 2 ? 4 : 2);
-      } while (!isPrime(i));
-    } else if(i == 3) {
-      i = 5;
-    } else {
-      i++;
-    }
-
     while (n % i == 0) {
       numberOfFactors++;
       destination[numberOfFactors-1] = i;
       n /= i;
+    }
+
+    // 2, 3, 5, 7, (+4), (+2), (+4), (+2), ...
+    if (i >= 5) {
+      i += step;
+      step = (step == 2 ? 4 : 2);
+    } else if(i == 3) {
+      i = 5;
+    } else {
+      i++;
     }
   }
 
