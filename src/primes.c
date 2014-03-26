@@ -13,10 +13,6 @@
 const uint64_t bases64[] = {2, 325, 9375, 28178, 450775, 9780504, 1795265022};
 #define N_BASES 7
 
-// ----- Thread-local variables
-static __thread uint64_t primes[MAX_PRIMES];
-static __thread uint64_t numberOfPrimes = 0;
-
 /*
  * Test n for primality using the Miller Rabin probabilistic method.
  * DO NOT use for n > MAX_UINT32
@@ -60,19 +56,25 @@ int millerRabin64(uint64_t n) {
 }
 
 int isPrime(uint64_t n) {
-  if(n < MAX_UINT32) {
-    return (n>73&&!(n%2&&n%3&&n%5&&n%7&&
+  if (n <= 73) {
+    return (n==2||n==3||n==5||n==7
+          ||n==11||n==13||n==17||n==19||n==23
+          ||n==29||n==31||n==37||n==41||n==43
+          ||n==47||n==53||n==59||n==61||n==67||n==71||n==73);
+  }
+  else if(n < MAX_UINT32) {
+    return !(n%2&&n%3&&n%5&&n%7&&
             n%11&&n%13&&n%17&&n%19&&n%23&&n%29&&
             n%31&&n%37&&n%41&&n%43&&n%47&&n%53&&
-            n%59&&n%61&&n%67&&n%71&&n%73))?0:
+            n%59&&n%61&&n%67&&n%71&&n%73) ? 0 :
             millerRabin32((uint32_t)n, 2)
          && millerRabin32((uint32_t)n, 7)
          && millerRabin32((uint32_t)n, 61);
   } else {
-    return (n>73&&!(n%2&&n%3&&n%5&&n%7&&
+    return !(n%2&&n%3&&n%5&&n%7&&
             n%11&&n%13&&n%17&&n%19&&n%23&&n%29&&
             n%31&&n%37&&n%41&&n%43&&n%47&&n%53&&
-            n%59&&n%61&&n%67&&n%71&&n%73))?0:
+            n%59&&n%61&&n%67&&n%71&&n%73) ? 0 :
             millerRabin64(n);
   }
 }
@@ -82,8 +84,8 @@ int isPrime(uint64_t n) {
 int getPrimeFactors(uint64_t n, uint64_t * destination) {
   uint64_t numberOfFactors = 0;
 
-  uint64_t primeIndex = 0;
-  uint64_t i = 2;
+  uint64_t i = 1;
+  char step = 2;
   while (n > 1) {
     // If n is prime, no need to go any further
     if (isPrime(n)) {
@@ -91,31 +93,23 @@ int getPrimeFactors(uint64_t n, uint64_t * destination) {
       return ++numberOfFactors;
     }
 
-    // First, read all available primes in cache
-    if (primeIndex < numberOfPrimes) {
-      i = primes[primeIndex];
+    // 2, 3, 5, 7, (+4), (+2), (+4), (+2), ...
+    if (i >= 5) {
+      do {
+        i += step;
+        step = (step == 2 ? 4 : 2);
+      } while (!isPrime(i));
+    } else if(i == 3) {
+      i = 5;
+    } else {
+      i++;
     }
-    // When the end of the cache has been reached,
-    // start filling it with the next primes
-    else {
-      while (!isPrime(i)) {
-        ++i;
-      }
-      // Write in cache if there's available space
-      if (numberOfPrimes < MAX_PRIMES) {
-        primes[numberOfPrimes] = i;
-        numberOfPrimes++;
-      }
-    }
-    primeIndex++;
 
     while (n % i == 0) {
       numberOfFactors++;
       destination[numberOfFactors-1] = i;
       n /= i;
     }
-    if (n % i != 0)
-      i++;
   }
 
   return numberOfFactors;
