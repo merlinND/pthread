@@ -50,14 +50,13 @@ int millerRabin32(uint64_t n, uint64_t k) {
   return 1;
 }
 
-// k: how many bases to use
 // @return 1 if n is prime
-int millerRabin64(uint64_t n, uint64_t k) {
+int millerRabin64(uint64_t n) {
   for (char i = 1; i <= N_BASES; ++i) {
-    if (efficient_mr64(bases64, k, n) == 1)
-      return 1;
+    if (efficient_mr64(bases64, i, n) == 0)
+      return 0;
   }
-  return 0;
+  return 1;
 }
 
 int isPrime(uint64_t n) {
@@ -74,9 +73,7 @@ int isPrime(uint64_t n) {
             n%11&&n%13&&n%17&&n%19&&n%23&&n%29&&
             n%31&&n%37&&n%41&&n%43&&n%47&&n%53&&
             n%59&&n%61&&n%67&&n%71&&n%73))?0:
-            millerRabin64(n, 2)
-         && millerRabin64(n, 7)
-         && millerRabin64(n, 61);
+            millerRabin64(n);
   }
 }
 
