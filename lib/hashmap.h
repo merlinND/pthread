@@ -6,6 +6,7 @@
 #define __HASHMAP_H__
 
 #include <stdlib.h>
+#include <stdint.h>
 
 #define MAP_MISSING -3  /* No such element */
 #define MAP_FULL -2   /* Hashmap is full */

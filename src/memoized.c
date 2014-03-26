@@ -27,7 +27,7 @@ void freeMemoizedContext(FILE * file) {
 void * startMemoizedJob(void * arg) {
   uint64_t number;
   int status = 0;
-  while(status != -1) {
+  while(status != -1) { // TODO: corriger la condition de fin
     // Get mutex in order to read into file
     pthread_mutex_lock(&readMutex);
     status = fscanf(f, "%llu", &number);

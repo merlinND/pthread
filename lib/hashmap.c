@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <pthread.h>
+
 #include "hashmap.h"
 
 #define INITIAL_SIZE 1024
