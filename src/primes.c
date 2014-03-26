@@ -11,7 +11,7 @@
 
 // Miller-Rabin bases (found by Jim Sinclair)
 const uint64_t bases64[] = {2, 325, 9375, 28178, 450775, 9780504, 1795265022};
-#define BASES_CNT64 7
+#define N_BASES 7
 
 // ----- Thread-local variables
 static __thread uint64_t primes[MAX_PRIMES];
@@ -50,8 +50,14 @@ int millerRabin32(uint64_t n, uint64_t k) {
   return 1;
 }
 
+// k: how many bases to use
+// @return 1 if n is prime
 int millerRabin64(uint64_t n, uint64_t k) {
-  return efficient_mr64(bases64, k, n);
+  for (char i = 1; i <= N_BASES; ++i) {
+    if (efficient_mr64(bases64, k, n) == 1)
+      return 1;
+  }
+  return 0;
 }
 
 int isPrime(uint64_t n) {
